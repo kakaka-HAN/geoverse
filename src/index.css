@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: #0e131e;
+  --color-surface: #0e131e;
+  --color-surface-container-lowest: #090e19;
+  --color-surface-container-low: #171b27;
+  --color-surface-container: #1b1f2b;
+  --color-surface-container-high: #252a36;
+  --color-surface-container-highest: #303541;
+  
+  --color-primary: #22d3ee;
+  --color-primary-container: #00e5ff;
+  --color-on-primary: #00363d;
+  --color-on-primary-container: #00626e;
+  
+  --color-secondary: #d7ffc5;
+  --color-secondary-container: #2ff801;
+  --color-on-secondary-container: #0f6d00;
+  
+  --color-tertiary: #ffe8de;
+  --color-tertiary-container: #ffc3a7;
+  --color-on-tertiary-container: #963d00;
+  
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  
+  --color-outline: #849396;
+  --color-outline-variant: #3b494c;
+  
+  --color-on-surface: #dee2f2;
+  --color-on-surface-variant: #bac9cc;
+  --color-on-background: #dee2f2;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-background font-sans selection:bg-primary/30;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface/60 backdrop-blur-xl border border-primary/10;
+  }
+  
+  .mono-text {
+    @apply font-mono text-[10px] tracking-tight;
+  }
+}
