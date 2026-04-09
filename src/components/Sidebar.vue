@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { 
   Compass, 
   BookOpen, 
@@ -27,11 +27,16 @@ const backendStatus = ref<'online' | 'offline' | 'checking'>('checking');
 const modelStatus = ref<'ready' | 'loading' | 'error'>('loading');
 const networkStatus = ref(navigator.onLine);
 
+const AI_BASE_URL = (process.env as any).AI_BASE_URL || 'http://localhost:11434/v1';
+const AI_MODEL_NAME = (process.env as any).AI_MODEL_NAME || 'deepseek-r1:latest';
+
 // ===== 检测函数 =====
 async function checkBackend() {
   backendStatus.value = 'checking';
   try {
-    await fetch('http://127.0.0.1:8000/', { method: 'GET' });
+    // 检查 Ollama 服务是否存活 (访问基础端口)
+    const baseUrl = AI_BASE_URL.replace('/v1', '');
+    const res = await fetch(baseUrl, { method: 'GET', mode: 'no-cors' });
     backendStatus.value = 'online';
   } catch (e) {
     backendStatus.value = 'offline';
@@ -41,12 +46,16 @@ async function checkBackend() {
 async function checkModel() {
   modelStatus.value = 'loading';
   try {
-    // 👉 推荐你后端加 /status 接口
-    const res = await fetch('http://127.0.0.1:8000/status');
+    // 检查特定模型是否已加载
+    const baseUrl = AI_BASE_URL.replace('/v1', '');
+    const res = await fetch(`${baseUrl}/api/tags`);
     if (!res.ok) throw new Error();
 
     const data = await res.json();
-    modelStatus.value = data.model === 'ready' ? 'ready' : 'loading';
+    const models = data.models || [];
+    const isReady = models.some((m: any) => m.name === AI_MODEL_NAME || m.name.startsWith(AI_MODEL_NAME));
+    
+    modelStatus.value = isReady ? 'ready' : 'error';
   } catch (e) {
     modelStatus.value = 'error';
   }
@@ -81,7 +90,7 @@ onUnmounted(() => {
 });
 
 // ===== UI工具函数 =====
-function statusColor(status: string) {
+function statusColor(status: string | boolean) {
   if (status === 'online' || status === 'ready' || status === true) return 'text-green-400';
   if (status === 'checking' || status === 'loading') return 'text-yellow-400 animate-pulse';
   return 'text-red-400';
